@@ -29,7 +29,7 @@ function Contect(props) {
     condition: boolean()
       .required()
       .oneOf([true], "you need to accept conditions"),
-      hobby: array().min(3).string().required("Please Select Min 3 Hobbies")
+      hobby: array().required("Please Select Min 2 Hobbies").min(2)
   });
   const formik = useFormik({
     initialValues: {
@@ -184,6 +184,7 @@ function Contect(props) {
                       type="checkbox"
                       className="gender"
                       name="hobby"
+                      value={"Treaking"}
                       onChange={handleChange}
                       onBlur={handleBlur}
                     />
@@ -192,6 +193,7 @@ function Contect(props) {
                       type="checkbox"
                       className="gender"
                       name="hobby"
+                      value={"Climbing"}
                       onChange={handleChange}
                       onBlur={handleBlur}
                     />
@@ -200,6 +202,7 @@ function Contect(props) {
                       type="checkbox"
                       className="gender"
                       name="hobby"
+                      value={"Traveling"}
                       onChange={handleChange}
                       onBlur={handleBlur}
                     />
@@ -208,6 +211,7 @@ function Contect(props) {
                       type="checkbox"
                       className="gender"
                       name="hobby"
+                      value={"Readding"}
                       onChange={handleChange}
                       onBlur={handleBlur}
                     />
