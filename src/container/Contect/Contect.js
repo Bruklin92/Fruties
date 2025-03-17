@@ -1,7 +1,6 @@
-import { Email } from "@mui/icons-material";
-import { isInteger, useFormik } from "formik";
+import { useFormik } from "formik";
 import React from "react";
-import { number, object, string } from "yup";
+import { array, boolean, number, object, string } from "yup";
 
 function Contect(props) {
   const contectSchema = object({
@@ -9,15 +8,39 @@ function Contect(props) {
       .required()
       .matches(/^[a-zA-Z]+$/),
     email: string().required().email(),
-    msg: string().required().max(20),
-    number: isInteger().required().max(10)
-  })
+    number: string()
+      .matches(/^[6789]\d{9}$/, "Please Enter Valid Mobile Number")
+      .required(),
+    msg: string()
+      .required()
+      .test("msg", "Please Enter Max 5 Word", (v) => {
+        const arr = v.trim().split(" ");
+        console.log(arr);
+
+        if (arr.length <= 2) {
+          return true;
+        } else {
+          return false;
+        }
+      }),
+
+    gender: string().required("Please Select Your Gender"),
+    contry: string().required("Please Select country"),
+    condition: boolean()
+      .required()
+      .oneOf([true], "you need to accept conditions"),
+      hobby: array().min(3).string().required("Please Select Min 3 Hobbies")
+  });
   const formik = useFormik({
     initialValues: {
       name: "",
       email: "",
-      number:"",
+      number: "",
       msg: "",
+      contry: "",
+      gender: "",
+      hobby: "",
+      condition: false,
     },
     validationSchema: contectSchema,
     onSubmit: (values) => {
@@ -30,7 +53,6 @@ function Contect(props) {
 
   return (
     <div>
-      {/* Single Page Header start */}
       <div className="container-fluid page-header py-5">
         <h1 className="text-center text-white display-6">Contact</h1>
         <ol className="breadcrumb justify-content-center mb-0">
@@ -43,8 +65,6 @@ function Contect(props) {
           <li className="breadcrumb-item active text-white">Contact</li>
         </ol>
       </div>
-      {/* Single Page Header End */}
-      {/* Contact Start */}
       <div className="container-fluid contact py-5">
         <div className="container py-5">
           <div className="p-5 bg-light rounded">
@@ -60,7 +80,6 @@ function Contect(props) {
                     <a href="https://htmlcodex.com/contact-form">
                       Download Now
                     </a>
-                    .
                   </p>
                 </div>
               </div>
@@ -86,7 +105,7 @@ function Contect(props) {
                     onBlur={handleBlur}
                     value={values.name}
                   />
-                  {errors.msg && touched.msg ? (
+                  {errors.name && touched.name ? (
                     <span className="error">Please Enter Valid Name</span>
                   ) : (
                     ""
@@ -100,22 +119,22 @@ function Contect(props) {
                     onBlur={handleBlur}
                     value={values.email}
                   />
-                  {errors.msg && touched.msg ? (
-                    <span className="error">Please Enter Valid Name</span>
+                  {errors.email && touched.email ? (
+                    <span className="error">Please Enter Your Email</span>
                   ) : (
                     ""
                   )}
                   <input
                     name="number"
-                    type="number"
+                    type="text"
                     className="w-100 form-control border-0 py-3 mb-4"
                     placeholder="Your Number"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={values.name}
+                    value={values.number}
                   />
-                  {errors.msg && touched.msg ? (
-                    <span className="error">Please Enter Valid Name</span>
+                  {errors.number && touched.number ? (
+                    <span className="error">Please Enter Number</span>
                   ) : (
                     ""
                   )}
@@ -131,7 +150,112 @@ function Contect(props) {
                     value={values.msg}
                   />
                   {errors.msg && touched.msg ? (
-                    <span className="error">Please Enter Valid Name</span>
+                    <span className="error">Please Enter Massage</span>
+                  ) : (
+                    ""
+                  )}
+                  <label>
+                    <input
+                      className="gender"
+                      type="radio"
+                      name="gender"
+                      value="m"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    Male
+                    <input
+                      className="gender"
+                      type="radio"
+                      name="gender"
+                      value="f"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    Female
+                  </label>
+                  {errors.gender && touched.gender ? (
+                    <span className="error">Please Select Gender</span>
+                  ) : (
+                    ""
+                  )}
+                  <label>
+                    <input
+                      type="checkbox"
+                      className="gender"
+                      name="hobby"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    Treaking
+                    <input
+                      type="checkbox"
+                      className="gender"
+                      name="hobby"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    Climbing
+                    <input
+                      type="checkbox"
+                      className="gender"
+                      name="hobby"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    Traveling
+                    <input
+                      type="checkbox"
+                      className="gender"
+                      name="hobby"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    Readding
+                  </label>
+                  {errors.hobby && touched.hobby ? (
+                    <span className="error">Please Select Hobby</span>
+                  ) : (
+                    ""
+                  )}
+                  <label>
+                    <input
+                      type="file"
+                      name="file"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                  </label>
+                  <select
+                    className="w-100 form-control border-0 py-3 mb-4"
+                    name="contry"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.contry}
+                  >
+                    <option value="">-- select Country</option>
+                    <option value="1">India</option>
+                    <option value="2">Spain</option>
+                    <option value="3">USA</option>
+                  </select>
+                  {errors.contry && touched.contry ? (
+                    <span className="error">Please Select contry</span>
+                  ) : (
+                    ""
+                  )}
+
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="condition"
+                      value={"cheaked"}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    Terms & conditions Applay.
+                  </label>
+                  {errors.condition && touched.condition ? (
+                    <span className="error">Please cheak the condition</span>
                   ) : (
                     ""
                   )}
@@ -170,7 +294,6 @@ function Contect(props) {
           </div>
         </div>
       </div>
-      {/* Contact End */}
     </div>
   );
 }
