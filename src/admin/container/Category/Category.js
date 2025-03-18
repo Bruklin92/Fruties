@@ -32,8 +32,22 @@ function Category(props) {
       description: "",
     },
     validationSchema: catSchema,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: (values, { resetForm }) => {
+      console.log( );
+      let obj = { ...values, id: Math.floor(Math.random() * 1000) };
+      console.log(obj);
+
+      const localdata = JSON.parse(localStorage.getItem("category"));
+
+      if (localdata) {
+        localdata.push(obj);
+        localStorage.setItem("category", JSON.stringify(localdata));
+      } else {
+        localStorage.setItem("category", JSON.stringify([obj]));
+      }
+
+      handleClose();
+      resetForm();
     },
   });
 
@@ -47,7 +61,6 @@ function Category(props) {
     setAge(event.target.value);
   };
 
-
   return (
     <div>
       <h1>Category Data</h1>
@@ -58,12 +71,12 @@ function Category(props) {
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Category</DialogTitle>
           <form onSubmit={handleSubmit}>
-              <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                <InputLabel id="demo-select-small-label">Category</InputLabel>
+            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+              <InputLabel id="demo-select-small-label">Category</InputLabel>
               <Select
                 labelId="demo-select-small-label"
                 id="demo-select-small"
-                value={Category} 
+                value={Category}
                 label="Age"
                 onChange={handleDrop}
               >

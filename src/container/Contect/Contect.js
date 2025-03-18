@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import React from "react";
-import { array, boolean, number, object, string } from "yup";
+import { array, boolean, mixed, number, object, string } from "yup";
 
 function Contect(props) {
   const contectSchema = object({
@@ -23,13 +23,29 @@ function Contect(props) {
           return false;
         }
       }),
-
     gender: string().required("Please Select Your Gender"),
     contry: string().required("Please Select country"),
     condition: boolean()
       .required()
       .oneOf([true], "you need to accept conditions"),
-      hobby: array().required("Please Select Min 2 Hobbies").min(2)
+    hobby: array().required("Please Select Min 2 Hobbies").min(2),
+    document: mixed()
+      .required()
+      .test("document", "File Size Must Be Less Than 2MB.", (val) => {
+        console.log("document", val.size);
+        if (val.size < 2 * 1024 * 1024) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      .test("document", "check your file type", (val) => {
+        if (val.type === "image/png" || val.type === "image/jpeg") {
+          return true;
+        } else {
+          return false;
+        }
+      }),
   });
   const formik = useFormik({
     initialValues: {
@@ -40,6 +56,7 @@ function Contect(props) {
       contry: "",
       gender: "",
       hobby: "",
+      document: "",
       condition: false,
     },
     validationSchema: contectSchema,
@@ -48,8 +65,15 @@ function Contect(props) {
     },
   });
 
-  const { handleSubmit, handleChange, handleBlur, errors, touched, values } =
-    formik;
+  const {
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    errors,
+    touched,
+    values,
+    setFieldValue,
+  } = formik;
 
   return (
     <div>
@@ -106,7 +130,7 @@ function Contect(props) {
                     value={values.name}
                   />
                   {errors.name && touched.name ? (
-                    <span className="error">Please Enter Valid Name</span>
+                    <span className="error">{errors.name}</span>
                   ) : (
                     ""
                   )}
@@ -120,7 +144,7 @@ function Contect(props) {
                     value={values.email}
                   />
                   {errors.email && touched.email ? (
-                    <span className="error">Please Enter Your Email</span>
+                    <span className="error">{errors.email}</span>
                   ) : (
                     ""
                   )}
@@ -134,7 +158,7 @@ function Contect(props) {
                     value={values.number}
                   />
                   {errors.number && touched.number ? (
-                    <span className="error">Please Enter Number</span>
+                    <span className="error">{errors.number}</span>
                   ) : (
                     ""
                   )}
@@ -150,7 +174,7 @@ function Contect(props) {
                     value={values.msg}
                   />
                   {errors.msg && touched.msg ? (
-                    <span className="error">Please Enter Massage</span>
+                    <span className="error">{errors.msg}</span>
                   ) : (
                     ""
                   )}
@@ -175,7 +199,7 @@ function Contect(props) {
                     Female
                   </label>
                   {errors.gender && touched.gender ? (
-                    <span className="error">Please Select Gender</span>
+                    <span className="error">{errors.gender}</span>
                   ) : (
                     ""
                   )}
@@ -218,18 +242,24 @@ function Contect(props) {
                     Readding
                   </label>
                   {errors.hobby && touched.hobby ? (
-                    <span className="error">Please Select Hobby</span>
+                    <span className="error">{errors.hobby}</span>
                   ) : (
                     ""
                   )}
-                  <label>
-                    <input
-                      type="file"
-                      name="file"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                  </label>
+                  <input
+                    type="file"
+                    name="document"
+                    onChange={(e) =>
+                      setFieldValue("document", e.target.files[0])
+                    }
+                    onBlur={handleBlur}
+                  />
+                  {errors.document && touched.document ? (
+                    <span className="error">{errors.document}</span>
+                  ) : (
+                    ""
+                  )}
+
                   <select
                     className="w-100 form-control border-0 py-3 mb-4"
                     name="contry"
@@ -243,7 +273,7 @@ function Contect(props) {
                     <option value="3">USA</option>
                   </select>
                   {errors.contry && touched.contry ? (
-                    <span className="error">Please Select contry</span>
+                    <span className="error">{errors.contry}</span>
                   ) : (
                     ""
                   )}
