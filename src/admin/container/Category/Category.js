@@ -4,17 +4,9 @@ import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { object, string } from "yup";
 import { useFormik } from "formik";
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -22,6 +14,8 @@ import IconButton from "@mui/material/IconButton";
 
 function Category(props) {
   const [open, setOpen] = React.useState(false);
+  const [data, setData] = useState([]);
+  const [update, setUpdate] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -29,6 +23,8 @@ function Category(props) {
 
   const handleClose = () => {
     setOpen(false);
+    setUpdate(false);
+    resetForm();
   };
 
   const catSchema = object({
@@ -43,52 +39,79 @@ function Category(props) {
     },
     validationSchema: catSchema,
     onSubmit: (values, { resetForm }) => {
-      console.log();
-      let obj = { ...values, id: Math.floor(Math.random() * 1000) };
-      console.log(obj);
-
       const localdata = JSON.parse(localStorage.getItem("category"));
 
-      if (localdata) {
-        localdata.push(obj);
+      if (update) {
+        let index = localdata.findIndex((v) => v.id === values.id);
+        console.log(index);
+
+        localdata[index] = values;
+        console.log(localdata);
+
         localStorage.setItem("category", JSON.stringify(localdata));
       } else {
-        localStorage.setItem("category", JSON.stringify([obj]));
+        let obj = { ...values, id: Math.floor(Math.random() * 1000) };
+
+        console.log(obj, localdata);
+
+        if (localdata) {
+          localdata.push(obj);
+          localStorage.setItem("category", JSON.stringify(localdata));
+        } else {
+          localStorage.setItem("category", JSON.stringify([obj]));
+        }
       }
+
       getdata();
       handleClose();
       resetForm();
     },
   });
 
-  const { handleSubmit, handleChange, handleBlur, errors, touched, values } =
-    formik;
+  const {
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    errors,
+    touched,
+    values,
+    setValues,
+    resetForm,
+  } = formik;
+
   console.log(values);
-
-  const [age, setAge] = React.useState("");
-
-  const handleDrop = (event) => {
-    setAge(event.target.value);
-  };
 
   const handleDelete = (id) => {
     console.log(id);
 
-    
-    
-  }
+    const fdata = data.filter((v) => v.id !== id);
+    console.log(fdata);
+
+    localStorage.setItem("category", JSON.stringify(fdata));
+    getdata();
+  };
+
+  const handleUpdate = (udata) => {
+    console.log(udata);
+
+    setValues(udata);
+
+    handleClickOpen();
+
+    setUpdate(true);
+  };
 
   const columns = [
     { field: "name", headerName: "Name", width: 130 },
     { field: "description", headerName: "Description", width: 130 },
     {
       headerName: "Action",
-      renderCell: (param) => (
+      renderCell: (params) => (
         <>
-          <IconButton aria-label="edit">
+          <IconButton aria-label="edit" onClick={() => handleUpdate(params.row)}>
             <EditIcon />
           </IconButton>
-          <IconButton aria-label="delete" onClick={handleDelete(param.row.id)}>
+          <IconButton aria-label="delete" onClick={() => handleDelete(params.row.id)}>
             <DeleteIcon />
           </IconButton>
         </>
@@ -97,9 +120,6 @@ function Category(props) {
   ];
 
   const paginationModel = { page: 0, pageSize: 10 };
-
-  const [data, setData] = useState([]);
-
   const getdata = () => {
     const localdata = JSON.parse(localStorage.getItem("category"));
     setData(localdata);
@@ -108,6 +128,7 @@ function Category(props) {
   useEffect(() => {
     getdata();
   }, []);
+
   return (
     <div>
       <h1>Category Data</h1>
@@ -154,21 +175,19 @@ function Category(props) {
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancel</Button>
-              <Button type="submit">submit</Button>
+              <Button type="submit">{update ? "Update" : "Submit"}</Button>
             </DialogActions>
           </form>
         </Dialog>
 
-        <Paper sx={{ height: 400, width: "100%" }}>
-          <DataGrid
-            rows={data}
-            columns={columns}
-            initialState={{ pagination: { paginationModel } }}
-            pageSizeOptions={[5, 10]}
-            checkboxSelection
-            sx={{ border: 0 }}
-          />
-        </Paper>
+        <DataGrid
+          rows={data}
+          columns={columns}
+          initialState={{ pagination: { paginationModel } }}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+          sx={{ border: 0 }}
+        />
       </React.Fragment>
     </div>
   );
