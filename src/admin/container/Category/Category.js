@@ -89,15 +89,13 @@ function Category(props) {
 
     localStorage.setItem("category", JSON.stringify(fdata));
     getdata();
+    handleClose();
   };
 
   const handleUpdate = (udata) => {
     console.log(udata);
-
     setValues(udata);
-
     handleClickOpen();
-
     setUpdate(true);
   };
 
@@ -119,11 +117,12 @@ function Category(props) {
     },
   ];
 
-  const paginationModel = { page: 0, pageSize: 10 };
   const getdata = () => {
     const localdata = JSON.parse(localStorage.getItem("category"));
     setData(localdata);
   };
+
+  const paginationModel = { page: 0, pageSize: 10 };
 
   useEffect(() => {
     getdata();
@@ -150,7 +149,7 @@ function Category(props) {
                 variant="standard"
                 onChange={handleChange}
                 onBlur={handleBlur}
-                values={values.name}
+                value={values.name}
                 error={touched.name && errors.name}
                 helperText={touched.name && errors.name ? errors.name : ""}
               />
@@ -164,7 +163,7 @@ function Category(props) {
                 variant="standard"
                 onChange={handleChange}
                 onBlur={handleBlur}
-                values={values.description}
+                value={values.description}
                 error={touched.description && errors.description}
                 helperText={
                   touched.description && errors.description
@@ -172,6 +171,7 @@ function Category(props) {
                     : ""
                 }
               />
+              
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancel</Button>

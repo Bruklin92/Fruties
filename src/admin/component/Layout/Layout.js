@@ -118,7 +118,7 @@ export default function Layout({ children }) {
   const labelct = [
     { icon: <CategoryIcon />, lable: "Category", to: "/admin/Category" },
     { icon: <ClassIcon />, lable: "Sub Category", to: "/admin/subcategory" },
-    { icon: <Inventory2Icon />, lable: "Product", to: "/admin/Category" },
+    { icon: <Inventory2Icon />, lable: "Product", to: "/admin/product" },
   ];
 
   return (

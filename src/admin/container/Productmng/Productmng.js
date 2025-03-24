@@ -5,27 +5,15 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { object, string } from "yup";
+import { number, object, string } from "yup";
 import { useFormik } from "formik";
-import {
-  FormControl,
-  FormHelperText,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  NativeSelect,
-  Select,
-} from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import { data } from "react-router-dom";
+import { FormControl, FormHelperText, NativeSelect } from "@mui/material";
 
-function SubCategory(props) {
+function Productmng(props) {
   const [open, setOpen] = React.useState(false);
+  const [product, setProduct] = useState([]);
   const [categorydata, setCategoryData] = useState([]);
   const [subcategorydata, setSubCategoryData] = useState([]);
-  const [edit, setEdit] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -33,11 +21,11 @@ function SubCategory(props) {
 
   const handleClose = () => {
     setOpen(false);
-    setEdit(false);
-    resetForm();
   };
 
-  const catSchema = object({
+  const productschema = object({
+    price: number().required(),
+    procategory: string().required(),
     category: string().required(),
     subname: string().required(),
     subdescription: string().required(),
@@ -45,38 +33,29 @@ function SubCategory(props) {
 
   const formik = useFormik({
     initialValues: {
+      price: "",
+      procategory: "",
       category: "",
       subname: "",
       subdescription: "",
     },
-    validationSchema: catSchema,
-    onSubmit: (values, {resetForm}) => {
+    validationSchema: productschema,
+    onSubmit: (values) => {
       console.log(values);
 
-      const sdata = JSON.parse(localStorage.getItem("subcategory"));
-      console.log(sdata);
+      const pdata = JSON.parse(localStorage.getItem("product"));
+      console.log(pdata);
 
       let obj = { ...values, id: Math.floor(Math.random() * 1000) };
       console.log(obj);
 
-      if (edit) {
-        let index = sdata.findIndex((v) => v.id === values.id);
-        console.log(index);
-
-        sdata[index] = values;
-        console.log(sdata);
-
-        localStorage.setItem("subcategory", JSON.stringify(sdata));
+      if (pdata) {
+        pdata.push(obj);
+        localStorage.setItem("product", JSON.stringify(pdata));
       } else {
-        if (sdata) {
-          sdata.push(obj);
-          localStorage.setItem("subcategory", JSON.stringify(sdata));
-        } else {
-          localStorage.setItem("subcategory", JSON.stringify([obj]));
-        }
+        localStorage.setItem("product", JSON.stringify([obj]));
       }
-      getdata();
-      handleClose();
+      setOpen(false);
       resetForm();
     },
   });
@@ -88,69 +67,33 @@ function SubCategory(props) {
     errors,
     touched,
     values,
-    setValues,
-    resetForm
+    resetForm,
+    setFieldValue,
   } = formik;
 
   console.log(values);
 
   const getdata = () => {
-    const subdata = JSON.parse(localStorage.getItem("category"));
-    setCategoryData(subdata);
+    const cdata = JSON.parse(localStorage.getItem("category"));
+    setCategoryData(cdata);
 
-    const sdata = JSON.parse(localStorage.getItem("subcategory"));
-    setSubCategoryData(sdata);
+    const pdata = JSON.parse(localStorage.getItem("product"));
+    setProduct(pdata);
   };
 
   useEffect(() => {
     getdata();
   }, []);
 
-  const paginationModel = { page: 0, pageSize: 5 };
-
-  const handleDelete = (id) => {
-    console.log(id);
-
-    const fdata = subcategorydata.filter((v) => v.id !== id);
-    console.log(fdata);
-
-    localStorage.setItem("subcategory", JSON.stringify(fdata));
-    getdata();
-    handleClose();
+  const handleSubData = (cat) => {
+    const sdata = JSON.parse(localStorage.getItem("subcategory"));
+    const filterdata = sdata?.filter((v) => v.category === cat);
+    setSubCategoryData(filterdata);
   };
-
-  const handledite = (data) => {
-    console.log(data);
-    setValues(data);
-    setEdit(true);
-    handleClickOpen();
-  };
-
-  const columns = [
-    { field: "category", headerName: "Category", width: 170 },
-    { field: "subname", headerName: "Name", width: 130 },
-    { field: "subdescription", headerName: "Description", width: 130 },
-    {
-      headerName: "Action",
-      renderCell: (params) => (
-        <div>
-          <IconButton aria-label="edit" onClick={() => handledite(params.row)}>
-            <EditIcon />
-          </IconButton>
-          <IconButton
-            aria-label="delete"
-            onClick={() => handleDelete(params.row.id)}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </div>
-      ),
-    },
-  ];
 
   return (
     <div>
-      <h1>Sub Category Data</h1>
+      <h1>Product Data</h1>
       <React.Fragment>
         <Button variant="outlined" onClick={handleClickOpen}>
           Sub Category
@@ -164,13 +107,17 @@ function SubCategory(props) {
                 error={touched.category && errors.category}
               >
                 <NativeSelect
+                  name="category"
                   defaultValue={""}
                   inputProps={{
                     name: "category",
                     id: "uncontrolled-native",
                   }}
                   value={values.category}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleSubData(e.target.value);
+                    setFieldValue("category", e.target.value);
+                  }}
                   onBlur={handleBlur}
                   values={values.category}
                   error={touched.category && errors.category}
@@ -187,6 +134,40 @@ function SubCategory(props) {
                   {touched.category && errors.category ? errors.category : ""}
                 </FormHelperText>
               </FormControl>
+
+              <FormControl
+                sx={{ m: 1, minWidth: 120 }}
+                error={touched.procategory && errors.procategory}
+              >
+                <NativeSelect
+                  defaultValue={""}
+                  inputProps={{
+                    name: "procategory",
+                    id: "uncontrolled-native",
+                  }}
+                  value={values.procategory}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  values={values.procategory}
+                  error={touched.procategory && errors.procategory}
+                  helperText={
+                    touched.procategory && errors.procategory
+                      ? errors.procategory
+                      : ""
+                  }
+                >
+                  <option value={""}>--Select Sub Category</option>
+                  {subcategorydata?.map((v) => (
+                    <option value={v.id}>{v.subname}</option>
+                  ))}
+                </NativeSelect>
+                <FormHelperText>
+                  {touched.procategory && errors.procategory
+                    ? errors.procategory
+                    : ""}
+                </FormHelperText>
+              </FormControl>
+
               <TextField
                 margin="dense"
                 label="Name"
@@ -197,12 +178,10 @@ function SubCategory(props) {
                 variant="standard"
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={values.subname}
+                values={values.subname}
                 error={touched.subname && errors.subname}
-                helperText={
-                  touched.subname && errors.subname ? errors.subname : ""
-                }
               />
+              {touched.subname && errors.subname ? errors.subname : ""}
               <TextField
                 margin="dense"
                 id="subdescription"
@@ -213,7 +192,7 @@ function SubCategory(props) {
                 variant="standard"
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={values.subdescription}
+                values={values.subdescription}
                 error={touched.subdescription && errors.subdescription}
                 helperText={
                   touched.subdescription && errors.subdescription
@@ -221,24 +200,31 @@ function SubCategory(props) {
                     : ""
                 }
               />
+              {touched.subname && errors.subname ? errors.subname : ""}
+              <TextField
+                margin="dense"
+                id="price"
+                name="price"
+                label="Price"
+                type="text"
+                fullWidth
+                variant="standard"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                values={values.price}
+                error={touched.price && errors.price}
+              />
+              {touched.price && errors.price ? errors.price : ""}
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancel</Button>
-              <Button type="submit">{edit ? "Edit" : "Submit"}</Button>
+              <Button type="submit">Submit</Button>
             </DialogActions>
           </form>
         </Dialog>
-        <DataGrid
-          rows={subcategorydata}
-          columns={columns}
-          initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[5, 10]}
-          checkboxSelection
-          sx={{ border: 0 }}
-        />
       </React.Fragment>
     </div>
   );
 }
 
-export default SubCategory;
+export default Productmng;
