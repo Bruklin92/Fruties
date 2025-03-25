@@ -20,6 +20,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { data } from "react-router-dom";
+import { render } from "@testing-library/react";
 
 function SubCategory(props) {
   const [open, setOpen] = React.useState(false);
@@ -50,7 +51,7 @@ function SubCategory(props) {
       subdescription: "",
     },
     validationSchema: catSchema,
-    onSubmit: (values, {resetForm}) => {
+    onSubmit: (values, { resetForm }) => {
       console.log(values);
 
       const sdata = JSON.parse(localStorage.getItem("subcategory"));
@@ -89,7 +90,7 @@ function SubCategory(props) {
     touched,
     values,
     setValues,
-    resetForm
+    resetForm,
   } = formik;
 
   console.log(values);
@@ -127,7 +128,15 @@ function SubCategory(props) {
   };
 
   const columns = [
-    { field: "category", headerName: "Category", width: 170 },
+    {
+      field: "category",
+      headerName: "Category",
+      width: 170,
+      renderCell: (params) => {
+        const cat = categorydata.find((v) => v.id == params.row.category);
+        return cat?.name;
+      }
+    },
     { field: "subname", headerName: "Name", width: 130 },
     { field: "subdescription", headerName: "Description", width: 130 },
     {
