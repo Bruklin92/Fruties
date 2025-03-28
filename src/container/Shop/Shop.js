@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
+import { Slide, Slider } from "@mui/material";
 
 function Shop(props) {
   const [product, setProduct] = useState([]);
   const [search, setSearch] = useState("");
   const [sortdata, setsort] = useState("");
   const [catdata, setCatdata] = useState("");
+  const [selectedCat, setSelectedCat] = useState("");
+  const [price, setPrice] = useState(0);
 
   const getdata = () => {
     const localData = JSON.parse(localStorage.getItem("product"));
@@ -19,10 +22,12 @@ function Shop(props) {
     localData.map((v) => {
       let x = cData.find((v1) => v1.id == v.category);
       console.log(x);
-      if (!Uniqueid.some((v2) => v2.id === v.category)) {
+      if (!Uniqueid.some((v2) => v2.id == v.category)) {
         Uniqueid.push(x);
       }
     });
+    console.log(Uniqueid);
+
     setCatdata(Uniqueid);
   };
   useEffect(() => {
@@ -49,10 +54,22 @@ function Shop(props) {
       }
     });
 
+    if (selectedCat) {
+      const ssdata = sData.filter((v1) => v1.category == selectedCat);
+
+      return ssdata;
+    }
+    console.log(selectedCat);
+
+    if (price) {
+      const ssdata = sData.filter((v1) => v1.price <= price);
+      return ssdata;
+    } 
+
     return sData;
   };
   console.log(search);
-  console.log(sortdata);
+  console.log(price);
 
   const finalData = handleFilter();
 
@@ -106,15 +123,44 @@ function Shop(props) {
                     <div className="mb-3">
                       <h4>Categories</h4>
                       <ul className="list-unstyled fruite-categorie">
-                        {product.map((v) => (
+                        <li>
+                          <div className="d-flex justify-content-between fruite-name">
+                            <a
+                              href="#"
+                              onClick={() => setSelectedCat()}
+                              style={{
+                                color: selectedCat ? "#81c408" : "orange",
+                              }}
+                            >
+                              <i className="fas fa-apple-alt me-2" />
+                              All
+                            </a>
+                            <span>({product.length})</span>
+                          </div>
+                        </li>
+                        {catdata.map((v) => (
                           <li>
                             <div className="d-flex justify-content-between fruite-name">
-                              <a href="#">
+                              <a
+                                href="#"
+                                onClick={() => setSelectedCat(v.id)}
+                                style={{
+                                  color:
+                                    selectedCat == v.id ? "orange" : " #81c408",
+                                }}
+                              >
                                 <i className="fas fa-apple-alt me-2" />
-                                {/* {v.name} */}
-                                {catdata?.find((c) => c.id === v.name).name}
+                                {v.name}
+                                {/* {catdata?.find((v1) => v1.id == v.category)?.name} */}
                               </a>
-                              <span>(3)</span>
+                              <span>
+                                (
+                                {
+                                  product.filter((v1) => v1.category == v.id)
+                                    .length
+                                }
+                                )
+                              </span>
                             </div>
                           </li>
                         ))}
@@ -124,15 +170,16 @@ function Shop(props) {
                   <div className="col-lg-12">
                     <div className="mb-3">
                       <h4 className="mb-2">Price</h4>
-                      <input
-                        type="range"
+                      <Slider
+                        style={{color: " #81c408"}}
                         className="form-range w-100"
-                        id="rangeInput"
-                        name="rangeInput"
-                        min={0}
+                        defaultValue={100}
+                        aria-label="Default"
+                        valueLabelDisplay="auto"                     
+                        min={100}
                         max={500}
-                        defaultValue={0}
-                        oninput="amount.value=rangeInput.value"
+                        value={price}
+                        onChange={(e, v) => setPrice(v)}
                       />
                       <output
                         id="amount"
@@ -141,7 +188,7 @@ function Shop(props) {
                         max-value={500}
                         htmlFor="rangeInput"
                       >
-                        0
+                        {price}
                       </output>
                     </div>
                   </div>
@@ -334,7 +381,7 @@ function Shop(props) {
                           className="text-white bg-secondary px-3 py-1 rounded position-absolute"
                           style={{ top: 10, left: 10 }}
                         >
-                          {v.category}
+                          {catdata.find((v1) => v1.id == v.category)?.name}
                         </div>
                         <div className="p-4 border border-secondary border-top-0 rounded-bottom">
                           <h4>{v.subname}</h4>
