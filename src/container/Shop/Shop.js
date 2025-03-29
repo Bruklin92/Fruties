@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Slide, Slider } from "@mui/material";
+import { NavLink } from "react-router-dom";
 
 function Shop(props) {
   const [product, setProduct] = useState([]);
@@ -64,7 +65,7 @@ function Shop(props) {
     if (price) {
       const ssdata = sData.filter((v1) => v1.price <= price);
       return ssdata;
-    } 
+    }
 
     return sData;
   };
@@ -171,11 +172,11 @@ function Shop(props) {
                     <div className="mb-3">
                       <h4 className="mb-2">Price</h4>
                       <Slider
-                        style={{color: " #81c408"}}
+                        style={{ color: " #81c408" }}
                         className="form-range w-100"
                         defaultValue={100}
                         aria-label="Default"
-                        valueLabelDisplay="auto"                     
+                        valueLabelDisplay="auto"
                         min={100}
                         max={500}
                         value={price}
@@ -369,37 +370,39 @@ function Shop(props) {
                 <div className="row g-4 justify-content-center">
                   {finalData.map((v) => (
                     <div className="col-md-6 col-lg-6 col-xl-4">
-                      <div className="rounded position-relative fruite-item">
-                        <div className="fruite-img">
-                          <img
-                            src="img/fruite-item-5.jpg"
-                            className="img-fluid w-100 rounded-top"
-                            alt
-                          />
-                        </div>
-                        <div
-                          className="text-white bg-secondary px-3 py-1 rounded position-absolute"
-                          style={{ top: 10, left: 10 }}
-                        >
-                          {catdata.find((v1) => v1.id == v.category)?.name}
-                        </div>
-                        <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                          <h4>{v.subname}</h4>
-                          <p>{v.subdescription}</p>
-                          <div className="d-flex justify-content-between flex-lg-wrap">
-                            <p className="text-dark fs-5 fw-bold mb-0">
-                              {v.price}
-                            </p>
-                            <a
-                              href="#"
-                              className="btn border border-secondary rounded-pill px-3 text-primary"
-                            >
-                              <i className="fa fa-shopping-bag me-2 text-primary" />{" "}
-                              Add to cart
-                            </a>
+                      <NavLink to={`/shop/:id`}>
+                        <div className="rounded position-relative fruite-item">
+                          <div className="fruite-img">
+                            <img
+                              src="img/fruite-item-5.jpg"
+                              className="img-fluid w-100 rounded-top"
+                              alt
+                            />
+                          </div>
+                          <div
+                            className="text-white bg-secondary px-3 py-1 rounded position-absolute"
+                            style={{ top: 10, left: 10 }}
+                          >
+                            {catdata.find((v1) => v1.id == v.category)?.name}
+                          </div>
+                          <div className="p-4 border border-secondary border-top-0 rounded-bottom">
+                            <h4>{v.subname}</h4>
+                            <p>{v.subdescription}</p>
+                            <div className="d-flex justify-content-between flex-lg-wrap">
+                              <p className="text-dark fs-5 fw-bold mb-0">
+                                {v.price}
+                              </p>
+                              <a
+                                href="#"
+                                className="btn border border-secondary rounded-pill px-3 text-primary"
+                              >
+                                <i className="fa fa-shopping-bag me-2 text-primary" />{" "}
+                                Add to cart
+                              </a>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      </NavLink>
                     </div>
                   ))}
                 </div>

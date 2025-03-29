@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 import Category from '../admin/container/Category/Category';
 import SubCategory from '../admin/container/Subcategory/SubCategory';
 import Productmng from '../admin/container/Productmng/Productmng';
+import Review from '../admin/container/Review/Review';
 
 function AdminRoutes(props) {
     return ( 
@@ -12,6 +13,7 @@ function AdminRoutes(props) {
                 <Route path='/category' element={<Category />}/>
                 <Route path='/subcategory' element={<SubCategory />}/>
                 <Route path='/product' element={<Productmng />}/>
+                <Route path='/review' element={<Review />}/>
             </Routes>
         </Layout>
 

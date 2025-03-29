@@ -21,6 +21,7 @@ import MailIcon from "@mui/icons-material/Mail";
 import CategoryIcon from "@mui/icons-material/Category";
 import ClassIcon from "@mui/icons-material/Class";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
+import RateReviewIcon from '@mui/icons-material/RateReview';
 import { NavLink } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -119,6 +120,8 @@ export default function Layout({ children }) {
     { icon: <CategoryIcon />, lable: "Category", to: "/admin/Category" },
     { icon: <ClassIcon />, lable: "Sub Category", to: "/admin/subcategory" },
     { icon: <Inventory2Icon />, lable: "Product", to: "/admin/product" },
+    { icon: <RateReviewIcon />, lable: "review", to: "/admin/review" },
+
   ];
 
   return (
