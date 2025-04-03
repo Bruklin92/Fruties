@@ -120,7 +120,7 @@ export default function Layout({ children }) {
     { icon: <CategoryIcon />, lable: "Category", to: "/admin/Category" },
     { icon: <ClassIcon />, lable: "Sub Category", to: "/admin/subcategory" },
     { icon: <Inventory2Icon />, lable: "Product", to: "/admin/product" },
-    { icon: <RateReviewIcon />, lable: "review", to: "/admin/review" },
+    { icon: <RateReviewIcon />, lable: "Review", to: "/admin/review" },
 
   ];
 

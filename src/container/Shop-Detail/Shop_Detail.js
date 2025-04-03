@@ -27,9 +27,9 @@ function Shop_Detail(props) {
       review: "",
     },
     validationSchema: Shopdetail,
-    onSubmit: (values) => {
+    onSubmit: (values, { resetForm }) => {
       const shopData = JSON.parse(localStorage.getItem("ShopData"));
-      let obj = { ...values, id: Math.floor(Math.random() * 1000) };
+      let obj = { ...values, id: Math.floor(Math.random() * 1000), status: "Pandding" };
       console.log(shopData);
 
       if (shopData) {
@@ -39,10 +39,11 @@ function Shop_Detail(props) {
         localStorage.setItem("ShopData", JSON.stringify([obj]));
       }
       getData();
+      resetForm();
     },
   });
 
-  const { handleSubmit, handleBlur, handleChange, errors, values, touched } = formik;
+  const { handleSubmit, handleBlur, handleChange, errors, values, touched, resetForm } = formik;
 
   console.log(errors, touched);
   

@@ -4,21 +4,24 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   InputLabel,
+  MenuItem,
   Paper,
   Select,
   TextField,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useFormik } from "formik";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { object, string } from "yup";
 import FormControl from "@mui/material/FormControl";
+import EditIcon from "@mui/icons-material/Edit";
 
 function Review(props) {
   const [open, setOpen] = React.useState(false);
   const [data, setdata] = React.useState("");
-  const [shop, setShop] = React.useState("");
+  const [update, setUpdate] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -26,6 +29,7 @@ function Review(props) {
 
   const handleClose = () => {
     setOpen(false);
+    resetForm();
   };
 
   useEffect(() => {
@@ -33,49 +37,75 @@ function Review(props) {
   });
 
   const getData = () => {
-    const shopData = JSON.parse(localStorage.getItem("shopDetaileData"));
+    const shopData = JSON.parse(localStorage.getItem("ShopData"));
     setdata(shopData);
-
-    const shopdet = JSON.parse(localStorage.getItem("shopDetaile"));
-    setShop(shopdet);
   };
 
   const Reviewsys = object({
-    name: string().required(),
+    sname: string().required(),
     email: string().required().email(),
     review: string().required(),
-    rating: string().required(),
+    status: string().required(),
   });
   const formik = useFormik({
     initialValues: {
-      name: "",
+      sname: "",
       email: "",
       review: "",
-      rating: "",
+      status: "",
     },
     validationSchema: Reviewsys,
-    onsubmit: (values) => {
+    onSubmit: (values, {resetForm}) => {
       console.log(values);
-      const sdata = JSON.parse(localStorage.getItem("Shopdata"));
-      let obj = { ...values, id: Math.floor(Math.random() * 1000) };
-      if (sdata) {
-        sdata.push(obj);
-        localStorage.setItem("Shopdata", JSON.stringify(sdata));
-      } else {
-        localStorage.setItem("Shopdata", JSON.stringify([obj]));
-      }
+      const sdata = JSON.parse(localStorage.getItem("ShopData"));
+
+      let index = sdata.findIndex((v) => v.id === values.id);
+      console.log(index);
+
+      sdata[index] = values;
+
+      localStorage.setItem("ShopData", JSON.stringify(sdata));
 
       getData();
+      resetForm();
       handleClose();
     },
   });
-  const { handleSubmit, handleBlur, handleChange, errors, values, touched } =
-    formik;
+  const {
+    handleSubmit,
+    handleBlur,
+    handleChange,
+    errors,
+    values,
+    touched,
+    setValues,
+    resetForm
+  } = formik;
+
+  const handleUpdate = (data) => {
+    setValues(data);
+    handleClickOpen();
+    setUpdate(true);
+  };
 
   const columns = [
-    { field: "name", headerName: "name", width: 130 },
-    { field: "email", headerName: "email", width: 130 },
-    { field: "review", headerName: "review", width: 130 },
+    { field: "sname", headerName: "Name", width: 150 },
+    { field: "email", headerName: "Email", width: 200 },
+    { field: "review", headerName: "Review", width: 180 },
+    { field: "status", headerName: "Status", width: 100 },
+    {
+      headerName: "Action",
+      renderCell: (params) => (
+        <>
+          <IconButton
+            aria-label="edit"
+            onClick={() => handleUpdate(params.row)}
+          >
+            <EditIcon />
+          </IconButton>
+        </>
+      ),
+    },
   ];
 
   const paginationModel = { page: 0, pageSize: 5 };
@@ -93,18 +123,17 @@ function Review(props) {
             <TextField
               margin="dense"
               id="name"
-              name="name"
+              name="sname"
               label="Enter your name"
               type="text"
               fullWidth
               variant="standard"
-              value={values.name}
+              value={values.sname}
               onChange={handleChange}
               onBlur={handleBlur}
-              error={touched.name && errors.name}
-              helperText={touched.name && errors.name ? errors.name : ""}
+              error={touched.sname && errors.sname}
+              helperText={touched.sname && errors.sname ? errors.sname : ""}
             />
-
             <TextField
               margin="dense"
               id="name"
@@ -138,26 +167,27 @@ function Review(props) {
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={values.rating}
-                label="rating"
+                value={values.status}
+                label="status"
+                name="status"
                 onChange={handleChange}
+                onBlur={handleBlur}
               >
-                <option value={0}>Your Product</option>
-                <option value={1}>Padding</option>
-                <option value={2}>Approved</option>
-                <option value={3}>Reject</option>
+                <MenuItem value={"Panding"}>Panding</MenuItem>
+                <MenuItem value={"Approved"}>Approved</MenuItem>
+                <MenuItem value={"Reject"}>Reject</MenuItem>
               </Select>
             </FormControl>
+            <DialogActions>
+              <Button onClick={handleClose}>Cancel</Button>
+              <Button type="submit">{update ? "Update" : "Submit"}</Button>
+            </DialogActions>
           </DialogContent>
         </form>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit">Submit</Button>
-        </DialogActions>
       </Dialog>
       <Paper sx={{ height: 400, width: "100%" }}>
         <DataGrid
-          rows={shop}
+          rows={data}
           columns={columns}
           initialState={{ pagination: { paginationModel } }}
           pageSizeOptions={[5, 10]}
