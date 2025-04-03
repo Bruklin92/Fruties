@@ -1,6 +1,8 @@
 import { combineReducers } from "redux";
 import counterSlice from "./counter.slice";
+import  productSlice  from "./product.slice";
 
 export const rootReducer = combineReducers({
-    count: counterSlice
+    count: counterSlice,
+    product: productSlice,
 })

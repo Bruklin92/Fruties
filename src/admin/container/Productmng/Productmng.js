@@ -16,6 +16,8 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { DataGrid } from "@mui/x-data-grid";
+import { useDispatch, useSelector } from "react-redux";
+import { productUser } from "../redux/slice/product.slice";
 
 function Productmng(props) {
   const [open, setOpen] = React.useState(false);
@@ -23,6 +25,12 @@ function Productmng(props) {
   const [categorydata, setCategoryData] = useState([]);
   const [subcategorydata, setSubCategoryData] = useState([]);
   const [edit, setEdit] = useState(false);
+
+  const dispatch = useDispatch(productUser);
+
+  const p = useSelector(state => state.product);
+  console.log(p);
+  
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -96,11 +104,7 @@ function Productmng(props) {
   console.log(values);
 
   const getdata = () => {
-    const cdata = JSON.parse(localStorage.getItem("category"));
-    setCategoryData(cdata);
-
-    const pdata = JSON.parse(localStorage.getItem("product"));
-    setProduct(pdata);
+    dispatch(productUser());
   };
 
   useEffect(() => {
@@ -122,7 +126,7 @@ function Productmng(props) {
     console.log(product);
     setValues(product);
     setEdit(true);
-    handleSubData(product.category)
+    handleSubData(product.category);
     handleClickOpen();
   };
 
@@ -133,21 +137,27 @@ function Productmng(props) {
   };
 
   const columns = [
-    { field: "category", headerName: "Category", width: 170,
-      renderCell: (params) => {        
+    {
+      field: "category",
+      headerName: "Category",
+      width: 170,
+      renderCell: (params) => {
         console.log(params.row.category, categorydata);
         const cat = categorydata?.find((v) => v.id == params.row.category);
         return cat?.name;
-      }
-     },
-    { field: "procategory", headerName: "Sub Category", width: 170,
+      },
+    },
+    {
+      field: "procategory",
+      headerName: "Sub Category",
+      width: 170,
       renderCell: (params) => {
         const sdata = JSON.parse(localStorage.getItem("subcategory"));
         console.log(params.row.procategory, subcategorydata);
         const subcat = sdata?.find((v) => v.id == params.row.procategory);
         return subcat?.subname;
-      }
-     },
+      },
+    },
     { field: "price", headerName: "Price", width: 130 },
     { field: "subname", headerName: "Name", width: 130 },
     { field: "subdescription", headerName: "Description", width: 130 },
