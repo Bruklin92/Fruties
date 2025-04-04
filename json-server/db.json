@@ -1,8 +1,35 @@
 {
-    "product": [
-        {
-            "id": "fsf2",
-            "name": "data"
-        }
-    ]
+  "product": [
+    {
+      "id": "e9ea",
+      "price": "100",
+      "procategory": "272",
+      "category": "336",
+      "subname": "ki",
+      "subdescription": "gg"
+    },
+    {
+      "id": "17a9",
+      "price": "100",
+      "procategory": "700",
+      "category": "336",
+      "subname": "ok",
+      "subdescription": "ewfewfwe"
+    },
+    {
+      "id": "b659",
+      "price": "100",
+      "procategory": "700",
+      "category": "336",
+      "subname": "ok",
+      "subdescription": "fewfwefwefwefewf"
+    }
+  ],
+  "category": [
+    {
+      "id": "98e3",
+      "name": "Inox",
+      "description": "ererrr"
+    }
+  ]
 }

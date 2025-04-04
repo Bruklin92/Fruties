@@ -11,11 +11,18 @@ import { DataGrid } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
+import { useDispatch, useSelector } from "react-redux";
+import { addCategory, categoryUser, deleteCategory, updatecategory } from "../redux/slice/category.slice";
 
 function Category(props) {
   const [open, setOpen] = React.useState(false);
   const [data, setData] = useState([]);
   const [update, setUpdate] = useState(false);
+
+  const dispatch = useDispatch(categoryUser);
+
+  const c = useSelector((state) => state.category);
+  console.log(c);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -42,24 +49,9 @@ function Category(props) {
       const localdata = JSON.parse(localStorage.getItem("category"));
 
       if (update) {
-        let index = localdata.findIndex((v) => v.id === values.id);
-        console.log(index);
-
-        localdata[index] = values;
-        console.log(localdata);
-
-        localStorage.setItem("category", JSON.stringify(localdata));
+       dispatch(updatecategory(values));
       } else {
-        let obj = { ...values, id: Math.floor(Math.random() * 1000) };
-
-        console.log(obj, localdata);
-
-        if (localdata) {
-          localdata.push(obj);
-          localStorage.setItem("category", JSON.stringify(localdata));
-        } else {
-          localStorage.setItem("category", JSON.stringify([obj]));
-        }
+       dispatch(addCategory(values));
       }
 
       getdata();
@@ -82,13 +74,7 @@ function Category(props) {
   console.log(values);
 
   const handleDelete = (id) => {
-    console.log(id);
-
-    const fdata = data.filter((v) => v.id !== id);
-    console.log(fdata);
-
-    localStorage.setItem("category", JSON.stringify(fdata));
-    getdata();
+    dispatch(deleteCategory(id));
     handleClose();
   };
 
@@ -106,10 +92,16 @@ function Category(props) {
       headerName: "Action",
       renderCell: (params) => (
         <>
-          <IconButton aria-label="edit" onClick={() => handleUpdate(params.row)}>
+          <IconButton
+            aria-label="edit"
+            onClick={() => handleUpdate(params.row)}
+          >
             <EditIcon />
           </IconButton>
-          <IconButton aria-label="delete" onClick={() => handleDelete(params.row.id)}>
+          <IconButton
+            aria-label="delete"
+            onClick={() => handleDelete(params.row.id)}
+          >
             <DeleteIcon />
           </IconButton>
         </>
@@ -118,8 +110,10 @@ function Category(props) {
   ];
 
   const getdata = () => {
-    const localdata = JSON.parse(localStorage.getItem("category"));
-    setData(localdata);
+    // const localdata = JSON.parse(localStorage.getItem("category"));
+    // setData(localdata);
+
+    dispatch(categoryUser())
   };
 
   const paginationModel = { page: 0, pageSize: 10 };
@@ -171,7 +165,6 @@ function Category(props) {
                     : ""
                 }
               />
-              
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancel</Button>
@@ -181,7 +174,7 @@ function Category(props) {
         </Dialog>
 
         <DataGrid
-          rows={data}
+          rows={c.category}
           columns={columns}
           initialState={{ pagination: { paginationModel } }}
           pageSizeOptions={[5, 10]}

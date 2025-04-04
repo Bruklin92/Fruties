@@ -17,7 +17,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { DataGrid } from "@mui/x-data-grid";
 import { useDispatch, useSelector } from "react-redux";
-import { productUser } from "../redux/slice/product.slice";
+import {
+  addProduct,
+  deleteProduct,
+  productUser,
+  updateProduct,
+} from "../redux/slice/product.slice";
+import { jsx } from "react/jsx-runtime";
 
 function Productmng(props) {
   const [open, setOpen] = React.useState(false);
@@ -28,9 +34,8 @@ function Productmng(props) {
 
   const dispatch = useDispatch(productUser);
 
-  const p = useSelector(state => state.product);
+  const p = useSelector((state) => state.product);
   console.log(p);
-  
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -67,21 +72,9 @@ function Productmng(props) {
       console.log(obj);
 
       if (edit) {
-        let index = pdata.findIndex((v) => v.id === values.id);
-        console.log(index);
-
-        pdata[index] = obj;
-        console.log(pdata);
-
-        localStorage.setItem("product", JSON.stringify(pdata));
-        setEdit(false);
+        dispatch(updateProduct(values));
       } else {
-        if (pdata) {
-          pdata.push(obj);
-          localStorage.setItem("product", JSON.stringify(pdata));
-        } else {
-          localStorage.setItem("product", JSON.stringify([obj]));
-        }
+        dispatch(addProduct(values));
       }
       getdata();
       handleClose();
@@ -105,6 +98,9 @@ function Productmng(props) {
 
   const getdata = () => {
     dispatch(productUser());
+
+    const pdata = JSON.parse(localStorage.getItem("category"));
+    setCategoryData(pdata);
   };
 
   useEffect(() => {
@@ -112,13 +108,8 @@ function Productmng(props) {
   }, []);
 
   const handleDelete = (id) => {
-    console.log(id);
+    dispatch(deleteProduct(id));
 
-    const fdata = product.filter((v) => v.id !== id);
-    console.log(fdata);
-
-    localStorage.setItem("product", JSON.stringify(fdata));
-    getdata();
     handleClose();
   };
 
@@ -312,7 +303,7 @@ function Productmng(props) {
           </form>
         </Dialog>
         <DataGrid
-          rows={product}
+          rows={p.product}
           columns={columns}
           initialState={{ pagination: { paginationModel } }}
           pageSizeOptions={[5, 10]}
